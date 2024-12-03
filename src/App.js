@@ -1,24 +1,65 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import AuthUI from './authUI';
+import AIStudyAssistant from './AIStudyAssistant';
+import AdminDashboard from './components/AdminDashboard';
+import StudyPage from './components/StudyPage';
+import VideoPage from './components/VideoPage';
+import { auth } from './firebaseSetup';
 import './App.css';
+
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const user = auth.currentUser;
+  
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<AuthUI />} />
+          <Route 
+            path="/ai-assistant" 
+            element={
+              <ProtectedRoute>
+                <AIStudyAssistant />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin-dashboard" 
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/study-page" 
+            element={
+              <ProtectedRoute>
+                <StudyPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/video" 
+            element={
+              <ProtectedRoute>
+                <VideoPage />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
